@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"gintest/models"
-	"gintest/utils"
+	"fei/models"
+	"fei/utils"
 	"io"
 	"strings"
 

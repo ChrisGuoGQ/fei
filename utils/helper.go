@@ -5,7 +5,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
-	"os"
+	"strings"
 )
 
 func MultipartReq(url string, params map[string]io.Reader) (*http.Response, error) {
@@ -18,12 +18,12 @@ func MultipartReq(url string, params map[string]io.Reader) (*http.Response, erro
 		if x, ok := r.(io.Closer); ok {
 			defer x.Close()
 		}
-		if x, ok := r.(*os.File); ok {
-			if fw, err = w.CreateFormFile(key, x.Name()); err != nil {
+		if _, ok := r.(*strings.Reader); ok {
+			if fw, err = w.CreateFormField(key); err != nil {
 				return nil, err
 			}
 		} else {
-			if fw, err = w.CreateFormField(key); err != nil {
+			if fw, err = w.CreateFormFile(key, key); err != nil {
 				return nil, err
 			}
 		}

@@ -19,7 +19,9 @@ type Database struct {
 	Name     string
 }
 type Config struct {
-	RunMode string
+	ConnectAll bool
+	RunMode    string
+	Port       string
 	Face
 	Database
 }

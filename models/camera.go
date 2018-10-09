@@ -42,6 +42,15 @@ func UpdateCamera(camera *Camera) error {
 	}
 	return nil
 }
+func UpdateCameraByAttr(camera *Camera) error {
+	if err := db.Omit("groups", "created_at").Save(&camera).Error; err != nil {
+		return err
+	}
+	if err := db.Model(&camera).Association("Groups").Replace(camera.Groups).Error; err != nil {
+		return err
+	}
+	return nil
+}
 func DestroyCamera(camera *Camera) error {
 	if err := db.Model(&camera).Association("Groups").Clear().Error; err != nil {
 		return err
@@ -49,6 +58,11 @@ func DestroyCamera(camera *Camera) error {
 	if err := db.Delete(&camera).Error; err != nil {
 		return err
 	}
-
+	return nil
+}
+func GetCamera(camera *Camera) error {
+	if err := db.Preload("Groups").First(&camera, camera.ID).Error; err != nil {
+		return err
+	}
 	return nil
 }

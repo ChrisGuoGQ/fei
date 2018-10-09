@@ -1,13 +1,12 @@
 package main
 
 import (
-	"gintest/controllers"
-	"gintest/models"
-	"gintest/utils"
+	"fei/controllers"
+	"fei/models"
+	"fei/utils"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/swaggo/gin-swagger"
-	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
 
 // @title Swagger Example API
@@ -24,11 +23,10 @@ import (
 
 // @host localhost:8080
 func main() {
-	models.Bootstrap()
 	utils.InitConfig()
+	models.Bootstrap()
 	r := gin.Default()
-	r.Use(gin.Logger())
-	r.Use(gin.Recovery())
+	r.Use(cors.Default())
 	r.GET("/groups", controllers.IndexGroup)
 	r.POST("/groups", controllers.CreateGroup)
 	r.PUT("/groups/:id", controllers.UpdateGroup)
@@ -37,6 +35,14 @@ func main() {
 	r.POST("/cameras", controllers.CreateCamera)
 	r.PUT("/cameras/:id", controllers.UpdateCamera)
 	r.DELETE("/cameras/:id", controllers.DestroyCamera)
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-	r.Run() // listen and serve on 0.0.0.0:8080
+	r.GET("/cameras/:id/start", controllers.StartCamera)
+	r.GET("/cameras/:id/stop", controllers.StopCamera)
+	// r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/add_bases", controllers.AddBases)
+	r.GET("/sync_bases", controllers.SyncBases)
+	cfg := utils.GetCfg()
+	if ConnectAll := cfg.ConnectAll; ConnectAll {
+		controllers.ConnectAll()
+	}
+	r.Run(":" + cfg.Port) // listen and serve on 0.0.0.0:8080
 }
